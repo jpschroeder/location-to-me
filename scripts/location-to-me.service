@@ -1,0 +1,12 @@
+[Unit]
+Description=location-to-me
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+WorkingDirectory=/root/data/location-to-me
+ExecStart=/root/data/location-to-me/location-to-me -httpaddr localhost:8087 -baseurl https://places.pipeto.me/
+
+[Install]
+WantedBy=multi-user.target

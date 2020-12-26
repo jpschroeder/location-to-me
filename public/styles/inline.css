@@ -1,0 +1,94 @@
+html, body { height:100%; }
+
+body {
+    --mdc-theme-primary: #000000;
+    --mdc-theme-secondary: #000000;
+    --mdc-theme-text-icon-on-background: #fff;
+}
+
+.mdc-top-app-bar  {
+    position: static
+}
+
+.mdc-dialog {
+    z-index: 1200;
+}
+
+.mdc-list {
+    padding: 0;
+}
+
+.mdc-list--avatar-list .mdc-list-item__graphic {
+    background-color: rgba(0,0,0,.3);
+}
+
+.mapbuttons {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1100;
+    flex-direction: column;
+    display: flex;
+}
+
+.mapbuttons button {
+    margin-top: 0.75rem;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - 64px);
+}
+
+#mapsection {
+    flex: 2
+}
+
+#listsection {
+    flex: 1;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+#listsection.length-0 {
+    display: none;
+}
+
+/* desktop: 840px */
+/* tablet: 600px */
+
+@media (max-width: 840px) { 
+    .content {
+        flex-direction: column;
+    }
+    .mapbuttons {
+        position: fixed;
+        bottom: 0.75rem;
+        right: 0.5rem;
+    }
+    #listsection.length-1 {
+        max-height: 72px;
+    }
+    #listsection.length-2 {
+        max-height: calc(2 * 72px);
+    }
+    #listsection.length-3 {
+        max-height: calc(3 * 72px);
+    }
+}
+
+@media (max-width: 599px) {
+    .content {
+        height: calc(100% - 56px);
+    }
+}
+
+.mapicon-unselected {
+    font-size: 36px;
+    color: rgba(0,0,0,.5);
+}
+
+.mapicon-selected {
+    font-size: 36px;
+}

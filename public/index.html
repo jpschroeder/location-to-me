@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="John Schroeder">
+    <meta name="description" content="Simple location sharing">
+    <title>Location To Me</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.css">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+    <link rel="stylesheet" type="text/css" href="/styles/inline.css">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/images/site.webmanifest">
+    <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#000000">
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-config" content="/images/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+    <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <button href="/" class="mdc-icon-button material-icons mdc-top-app-bar__navigation-icon--unbounded">public</button>
+                <span class="mdc-top-app-bar__title">Location To Me</span>
+                <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+                    <button id="subscribebutton" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Notify" style="display:none;">notifications_off</button>
+                    <button id="clearbutton" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Clear" style="display:none;">delete</button>
+                </section>
+            </section>
+        </div>
+    </header>
+    
+    <div class="content">
+        <section id="mapsection">
+            <!-- map goes here -->
+
+            <div class="mapbuttons">
+                <button id="savebutton" class="mdc-fab mdc-fab--extended" style="display: none;">
+                    <div class="mdc-fab__ripple"></div>
+                    <span class="mdc-fab__label">Save</span>
+                    <span class="material-icons mdc-fab__icon">add</span>
+                </button>
+                <button id="findbutton" class="mdc-fab mdc-fab--extended">
+                    <div class="mdc-fab__ripple"></div>
+                    <span class="mdc-fab__label">Share</span>
+                    <span class="material-icons mdc-fab__icon">gps_not_fixed</span>
+                </button>
+            </div>
+        </section>
+        
+        <section id="listsection" class="length-0">
+            <ul id="locationlist" class="mdc-list mdc-list--two-line mdc-list--avatar-list" role="listbox">
+            </ul>
+        </section>
+    </div>
+
+
+    <template id="locationlist-item-template">
+        <li class="mdc-list-item mdc-list-item--selected" role="option">
+            <span class="mdc-list-item__graphic material-icons" aria-hidden="true">place</span>
+            <span class="mdc-list-item__text">
+                <span class="mdc-list-item__primary-text latlong">
+                    <!-- 39.61249 | -77.41281 -->
+                </span>
+                <span class="mdc-list-item__secondary-text timestamp">
+                    <!-- 3/22/2020, 01:36 AM -->
+                </span>
+            </span>
+            <span class="mdc-list-item__meta material-icons item-menu" aria-hidden="true">more_vert</span>
+        </li>
+    </template>
+    
+    <div id="location-menu" class="mdc-dialog">
+        <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true" aria-labelledby="menu" aria-describedby="menu">
+                <div class="mdc-dialog__content">
+                    <ul id="menu-items" class="mdc-list mdc-list--avatar-list">
+                        <li class="mdc-list-item" data-mdc-dialog-action="maps">
+                            <span class="mdc-list-item__graphic material-icons" aria-hidden="true">map</span>
+                            <span class="mdc-list-item__text">Google Maps</span>
+                        </li>
+                        <li class="mdc-list-item" data-mdc-dialog-action="remove">
+                            <span class="mdc-list-item__graphic material-icons" aria-hidden="true">clear</span>
+                            <span class="mdc-list-item__text">Remove</span>
+                        </li>
+                    </ul>
+                </div>
+                <footer class="mdc-dialog__actions">
+                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
+                      <div class="mdc-button__ripple"></div>
+                      <span class="mdc-button__label">Cancel</span>
+                    </button>
+                  </footer>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+    
+    <script src="https://unpkg.com/material-components-web@v4.0.0/dist/material-components-web.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
+    <script src="/scripts/util.js"></script>
+    <script src="/scripts/app.js"></script>
+    <script src="/scripts/current.js"></script>
+    <script src="/scripts/list.js"></script>
+    <script src="/scripts/map.js"></script>
+    <script src="/scripts/combined.js"></script>
+    <script src="/scripts/subscribe.js"></script>
+    <script>
+        /* Actions:
+            select
+            menu
+
+            share
+            remove
+            clear
+
+            notifications_ready
+            subscribe
+            unsubscribe
+        */
+        class App {
+            constructor() {
+                this.route();
+                this.bus = new Bus();
+                this.mapbuttons = new MapButtons('findbutton', 'savebutton', this.userId(), this.bus);
+                this.clearbutton = new ClearButton('clearbutton', this.bus);
+                this.list = new CombinedList(
+                    new LocationList('locationlist', 'locationlist-item-template', this.bus),
+                    new LocationMap('mapsection', this.bus),
+                    this.bus);
+                this.menu = new LocationMenu('location-menu', 'menu-items', this.bus);
+                this.server = new Server(this.bus);
+                this.subscribebutton = new SubscribeButton('subscribebutton', this.bus);
+                this.notifications = new Notifications(this.bus);
+                this.serviceWorker();
+            }
+
+            route() {
+                if(window.location.pathname === '/') {
+                    window.history.replaceState(null, null, randKey());
+                }
+            }
+
+            userId() {
+                let userId = localStorage.getItem('userId');
+                if (!userId) {
+                    userId = uuidv4();
+                    localStorage.setItem('userId', userId);
+                }
+                return userId;
+            }
+
+            serviceWorker() {
+                if (!('serviceWorker' in navigator)) return;
+                navigator.serviceWorker.register('/service-worker.js');
+            }
+        }
+        const app = new App();
+    </script>
+</body>
+</html>
